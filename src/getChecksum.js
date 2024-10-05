@@ -9,10 +9,20 @@ function getChecksum(entropy) {
 
     const hash = crypto.createHash('sha256').update(entropy).digest();
     const checksumLength = entropy.length * 8 / 32;
-    const checksum = parseInt(hash.toString('hex'), 16).toString(2).padStart(256, '0').slice(0, checksumLength);
+    const checksumBits = hash.readUIntBE(0, Math.ceil(checksumLength / 8)).toString(2).padStart(8 * Math.ceil(checksumLength / 8), '0').slice(0, checksumLength);
 
     const entropyBinary = Array.from(entropy).map(byte => byte.toString(2).padStart(8, '0')).join('');
-    return entropyBinary + checksum;
+    const combinedBinary = entropyBinary + checksumBits;
+
+    const paddedLength = Math.ceil(combinedBinary.length / 8) * 8;
+    const paddedBinary = combinedBinary.padEnd(paddedLength, '0');
+
+    const byteArray = [];
+    for (let i = 0; i < paddedBinary.length; i += 8) {
+        byteArray.push(parseInt(paddedBinary.slice(i, i + 8), 2));
+    }
+
+    return Buffer.from(byteArray);
 }
 
 module.exports = getChecksum;
