@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-function getChecksum(entropy) {
+function getChecksum(entropy, checksumLength) {
     if (!entropy) {
         throw new Error(`Parameter 'entropy' is required.`);
     } if (entropy.length < 16 || entropy.length > 32 || entropy.length % 4 !== 0) {
@@ -8,7 +8,6 @@ function getChecksum(entropy) {
     }
 
     const hash = crypto.createHash('sha256').update(entropy).digest();
-    const checksumLength = entropy.length * 8 / 32;
     const checksumBits = hash.readUIntBE(0, Math.ceil(checksumLength / 8)).toString(2).padStart(8 * Math.ceil(checksumLength / 8), '0').slice(0, checksumLength);
 
     const entropyBinary = Array.from(entropy).map(byte => byte.toString(2).padStart(8, '0')).join('');
