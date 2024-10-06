@@ -4,9 +4,9 @@ function getChecksum(ENT, checksumLength) {
     if (!ENT) {
         throw new Error(`Initial Entropy Parameter 'ENT' is required.`);
     } if ((ENT.length + checksumLength) < 11 || (ENT.length + checksumLength) > 506) {
-        throw new Error(`ENT + Checksum Combined Length must be at least 11 bits and no longer than 506 bits.`);
+        throw new Error(`ENT + Checksum Combined length must be at least 11 bits and no longer than 506 bits.`);
     } if ((ENT.length + checksumLength) % 11 !== 0) {
-        throw new Error(`ENT + Checksum Combined Length must be a multiple of 11.`);
+        throw new Error(`ENT + Checksum Combined length must be a multiple of 11.`);
     }
 
     const byteArray = [];
@@ -28,6 +28,10 @@ function getChecksum(ENT, checksumLength) {
 function verifyChecksum(entropy, checksumLength) {
     if (!entropy) {
         throw new Error(`Parameter 'entropy' is required.`);
+    } if (entropy.length < 11 || entropy.length > 506) {
+        throw new Error(`Entropy must be at least 11 bits and no longer than 506 bits.`);
+    } if (entropy.length % 11 !== 0) {
+        throw new Error(`Entropy must be a multiple of 11.`);
     }
 
     const totalBits = entropy.length;
