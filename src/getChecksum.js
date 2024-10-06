@@ -25,4 +25,20 @@ function getChecksum(ENT, checksumLength) {
     return combinedEntropy;
 }
 
-module.exports = getChecksum;
+function verifyChecksum(entropy, checksumLength) {
+    if (!entropy) {
+        throw new Error(`Parameter 'entropy' is required.`);
+    }
+
+    const totalBits = entropy.length;
+    const entropyLength = totalBits - checksumLength;
+    const entropyBits = entropy.slice(0, entropyLength);
+    const actualChecksum = entropy.slice(entropyLength, totalBits);
+
+    const expectedCombinedEntropy = getChecksum(entropyBits, checksumLength);
+    const expectedChecksum = expectedCombinedEntropy.slice(entropyLength, totalBits);
+
+    return actualChecksum === expectedChecksum;
+}
+
+module.exports = { getChecksum, verifyChecksum };
