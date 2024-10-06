@@ -1,5 +1,5 @@
 const toEntropy = require('./toEntropy');
-const { verifyChecksum } = require('./getChecksum');
+const { verifyChecksum } = require('./checksum');
 
 function toMnemonic(wordlist, entropy) {
     if (!wordlist) {

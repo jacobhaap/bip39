@@ -1,49 +1,49 @@
-function toMnemonic(wordlist, entropy) {
-    if (!wordlist) {
-        throw new Error(`Parameter 'wordlist' is required.`);
-    } if (!entropy) {
-        throw new Error(`Parameter 'entropy' is required.`);
-    }
+const { getChecksum, verifyChecksum } = require('./src/checksum');
+const { toMnemonic, validateMnemonic } = require('./src/mnemonic');
+const toEntropy = require('./src/toEntropy');
+const wordlist = require('./wordlists/wordlist');
 
-    const length = entropy.length;
-    if (length < 11 || length > 506) {
-        throw new Error(`Entropy must be at least 11 bits and no longer than 506 bits.`);
-    } if (length % 11 !== 0) {
-        throw new Error(`Entropy must be a multiple of 11.`);
-    }
-
-    const words = [];
-    for (let i = 0; i < entropy.length; i += 11) {
-        const index = parseInt(entropy.slice(i, i + 11), 2);
-        words.push(wordlist[index]);
-    }
-    const mnemonic = words.join(' ');
-    return mnemonic;
+function bip39() {
+    throw new Error(`Function 'bip39' requires a method.`);
 }
 
-function toEntropy(wordlist, mnemonic) {
-    if (!wordlist) {
-        throw new Error(`Parameter 'wordlist' is required.`);
-    } if (!mnemonic) {
-        throw new Error(`Parameter 'mnemonic' is required.`);
-    }
-
-    const words = mnemonic.split(' ');
-    const length = words.length;
-    if (length < 1 || length > 46) {
-        throw new Error(`Mnemonic must be at least 1 word and no longer than 46 words.`);
-    }
-
-    let entropy = '';
-    words.forEach(word => {
-        const index = wordlist.indexOf(word);
-        if (index === -1) {
-            throw new Error(`Word '${word}' not found in wordlist.`);
+bip39.core = {
+    toMnemonic: function(wordlist, ENT) {
+        if (!wordlist) {
+            throw new Error(`Parameter 'wordlist' is required.`);
+        } if (!ENT) {
+            throw new Error(`Initial Entropy Parameter 'ENT' is required.`);
+        } if (ENT.length < 128 || ENT.length > 256) {
+            throw new Error(`Initial Entropy must be at least 128 bits and no longer than 256 bits.`);
+        } if (ENT.length % 32 !== 0) {
+            throw new Error(`Initial Entropy must be a multiple of 32.`);
         }
-        entropy += index.toString(2).padStart(11, '0');
-    });
 
-    return entropy;
+        const checksumLength = ENT.length / 32;
+        const entropy = getChecksum(ENT, checksumLength);
+        const mnemonic = toMnemonic(wordlist, entropy);
+        const valid = validateMnemonic(wordlist, mnemonic, checksumLength);
+        if (valid) {
+            return mnemonic;
+        } else {
+            throw new Error(`Invalid mnemonic returned.`)
+        }
+    },
+    toEntropy: toEntropy,
+    validate: validateMnemonic
+};
+
+bip39.ext = {
+    toMnemonic: toMnemonic,
+    toEntropy: toEntropy,
+    validate: validateMnemonic
+};
+
+bip39.ent = {
+    checksum: getChecksum,
+    verify: verifyChecksum
 }
 
-module.exports = { toMnemonic, toEntropy };
+bip39.wordlist = wordlist;
+
+module.exports = bip39;
