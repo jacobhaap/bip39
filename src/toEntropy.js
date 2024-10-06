@@ -20,15 +20,7 @@ function toEntropy(wordlist, mnemonic) {
         entropy += index.toString(2).padStart(11, '0');
     });
 
-    const paddedLength = Math.ceil(entropy.length / 8) * 8;
-    const paddedEntropy = entropy.padEnd(paddedLength, '0');
-
-    const byteArray = [];
-    for (let i = 0; i < paddedEntropy.length; i += 8) {
-        byteArray.push(parseInt(paddedEntropy.slice(i, i + 8), 2));
-    }
-
-    return Buffer.from(byteArray);
+    return entropy;
 }
 
 module.exports = toEntropy;

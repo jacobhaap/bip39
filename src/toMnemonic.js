@@ -5,12 +5,7 @@ function toMnemonic(wordlist, entropy) {
         throw new Error(`Parameter 'entropy' is required.`);
     }
 
-    if (!Buffer.isBuffer(entropy)) {
-        throw new Error(`Parameter 'entropy' must be a byte array.`);
-    }
-
-    const entropyBinary = Array.from(entropy).map(byte => byte.toString(2).padStart(8, '0')).join('');
-    const trimmedBinary = entropyBinary.slice(0, entropyBinary.length - (entropyBinary.length % 11));
+    const trimmedBinary = entropy.slice(0, entropy.length - (entropy.length % 11));
 
     if (trimmedBinary.length < 11 || trimmedBinary.length > 506) {
         throw new Error(`Entropy must be at least 11 bits and no longer than 506 bits.`);
