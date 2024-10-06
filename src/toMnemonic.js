@@ -1,3 +1,6 @@
+const toEntropy = require('./toEntropy');
+const { verifyChecksum } = require('./getChecksum');
+
 function toMnemonic(wordlist, entropy) {
     if (!wordlist) {
         throw new Error(`Parameter 'wordlist' is required.`);
@@ -22,4 +25,16 @@ function toMnemonic(wordlist, entropy) {
     return mnemonic;
 }
 
-module.exports = toMnemonic;
+function validateMnemonic(wordlist, mnemonic, checksumLength) {
+    if (!mnemonic) {
+        throw new Error(`Parameter 'mnemonic' is required.`)
+    } if (!checksumLength) {
+        throw new Error(`Parameter 'checksumLength' is required.`)
+    }
+
+    const entropy = toEntropy(wordlist, mnemonic);
+    const verified = verifyChecksum(entropy, checksumLength);
+    return verified;
+}
+
+module.exports = { toMnemonic, validateMnemonic };
