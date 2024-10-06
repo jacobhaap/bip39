@@ -1,11 +1,10 @@
 const { getChecksum, verifyChecksum } = require('./src/checksum');
 const { toMnemonic, validateMnemonic } = require('./src/mnemonic');
 const toEntropy = require('./src/toEntropy');
-const wordlist = require('./wordlists/wordlist');
 
 function bip39() {
     throw new Error(`Function 'bip39' requires a method.`);
-}
+};
 
 bip39.core = {
     toMnemonic: function(wordlist, ent) {
@@ -64,8 +63,34 @@ bip39.ext = {
 bip39.ent = {
     checksum: getChecksum,
     verify: verifyChecksum
-}
+};
 
-bip39.wordlist = wordlist;
+function loadWordlist(language) {
+    switch (language) {
+        case 'czech':
+            return require('./wordlists/czech').czech;
+        case 'english':
+            return require('./wordlists/english').english;
+        case 'french':
+            return require('./wordlists/french').french;
+        case 'italian':
+            return require('./wordlists/italian').italian;
+        case 'portuguese':
+            return require('./wordlists/portuguese').portuguese;
+        case 'spanish':
+            return require('./wordlists/spanish').spanish;
+        default:
+            throw new Error(`Unknown wordlist language: ${language}`);
+    }
+};
 
-module.exports = bip39;
+const wordlists = {
+    get czech() { return loadWordlist('czech'); },
+    get english() { return loadWordlist('english'); },
+    get french() { return loadWordlist('french'); },
+    get italian() { return loadWordlist('italian'); },
+    get portuguese() { return loadWordlist('portuguese'); },
+    get spanish() { return loadWordlist('spanish'); }
+};
+
+module.exports = { bip39, wordlists };
