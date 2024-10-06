@@ -1,17 +1,17 @@
 const crypto = require('crypto');
 
-function getChecksum(ENT, checksumLength) {
-    if (!ENT) {
-        throw new Error(`Initial Entropy Parameter 'ENT' is required.`);
-    } if ((ENT.length + checksumLength) < 11 || (ENT.length + checksumLength) > 506) {
-        throw new Error(`ENT + Checksum Combined length must be at least 11 bits and no longer than 506 bits.`);
-    } if ((ENT.length + checksumLength) % 11 !== 0) {
-        throw new Error(`ENT + Checksum Combined length must be a multiple of 11.`);
+function getChecksum(ent, checksumLength) {
+    if (!ent) {
+        throw new Error(`Initial Entropy parameter 'ent' is required.`);
+    } if ((ent.length + checksumLength) < 11 || (ent.length + checksumLength) > 506) {
+        throw new Error(`ent + checksum combined length must be at least 11 bits and no longer than 506 bits.`);
+    } if ((ent.length + checksumLength) % 11 !== 0) {
+        throw new Error(`ent + checksum combined length must be a multiple of 11.`);
     }
 
     const byteArray = [];
-    for (let i = 0; i < ENT.length; i += 8) {
-        byteArray.push(parseInt(ENT.slice(i, i + 8), 2));
+    for (let i = 0; i < ent.length; i += 8) {
+        byteArray.push(parseInt(ent.slice(i, i + 8), 2));
     }
 
     const hash = crypto.createHash('sha256').update(Buffer.from(byteArray)).digest();
@@ -20,7 +20,7 @@ function getChecksum(ENT, checksumLength) {
         .join('')
         .slice(0, checksumLength);
 
-    const combinedEntropy = ENT + checksum;
+    const combinedEntropy = ent + checksum;
 
     return combinedEntropy;
 }

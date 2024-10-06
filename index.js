@@ -8,19 +8,19 @@ function bip39() {
 }
 
 bip39.core = {
-    toMnemonic: function(wordlist, ENT) {
+    toMnemonic: function(wordlist, ent) {
         if (!wordlist) {
             throw new Error(`Parameter 'wordlist' is required.`);
-        } if (!ENT) {
-            throw new Error(`Initial Entropy Parameter 'ENT' is required.`);
-        } if (ENT.length < 128 || ENT.length > 256) {
+        } if (!ent) {
+            throw new Error(`Initial Entropy parameter 'ent' is required.`);
+        } if (ent.length < 128 || ent.length > 256) {
             throw new Error(`Initial Entropy must be at least 128 bits and no longer than 256 bits.`);
-        } if (ENT.length % 32 !== 0) {
+        } if (ent.length % 32 !== 0) {
             throw new Error(`Initial Entropy must be a multiple of 32.`);
         }
 
-        const checksumLength = ENT.length / 32;
-        const entropy = getChecksum(ENT, checksumLength);
+        const checksumLength = ent.length / 32;
+        const entropy = getChecksum(ent, checksumLength);
         const mnemonic = toMnemonic(wordlist, entropy);
         const valid = validateMnemonic(wordlist, mnemonic, checksumLength);
         if (valid) {
