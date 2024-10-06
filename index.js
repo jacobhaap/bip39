@@ -30,7 +30,29 @@ bip39.core = {
         }
     },
     toEntropy: toEntropy,
-    validate: validateMnemonic
+    validate: function(wordlist, mnemonic) {
+        if (!wordlist) {
+            throw new Error(`Parameter 'wordlist' is required.`);
+        } if (!mnemonic) {
+            throw new Error(`Parameter 'mnemonic' is required.`);
+        }
+
+        const lengths = [ 12, 15, 18, 21, 24 ];
+        const words = mnemonic.split(' ').length;
+        if (!lengths.includes(words)) {
+            throw new Error(`Invalid mnemonic length.`);
+        }
+
+        function getChecksumLength(mnemonic) {
+            const lengths = { 12: 4, 15: 5, 18: 6, 21: 7, 24: 8 };
+            const words = mnemonic.split(' ').length;
+            if (lengths[words]) return lengths[words];
+            throw new Error(`Invalid mnemonic length.`);
+        }
+        const checksumLength = getChecksumLength(mnemonic);
+        const valid = validateMnemonic(wordlist, mnemonic, checksumLength);
+        return valid;
+    }
 };
 
 bip39.ext = {
